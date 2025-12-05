@@ -1,32 +1,39 @@
 package com.example.game_analytics.service;
 
+import com.example.game_analytics.config.PlayerLevelProperties;
 import com.example.game_analytics.model.UserGameAnalytics;
 import com.example.game_analytics.repository.UserGameAnalyticsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.TreeMap;
 
 @Service
 public class UserGameAnalyticsService {
 
     private final UserGameAnalyticsRepository userGameAnalyticsRepository;
-    private final TreeMap<Integer, Integer> experienceToMaxLevelConfig;
+    private final PlayerLevelProperties playerLevelProperties;
 
     @Autowired
     public UserGameAnalyticsService(UserGameAnalyticsRepository userGameAnalyticsRepository,
-                                    TreeMap<Integer, Integer> experienceToMaxLevelConfig) {
+                                    PlayerLevelProperties playerLevelProperties) {
         this.userGameAnalyticsRepository = userGameAnalyticsRepository;
-        this.experienceToMaxLevelConfig = experienceToMaxLevelConfig;
+        this.playerLevelProperties = playerLevelProperties;
     }
 
-    public UserGameAnalytics addUsersExperience(int userId, int experience) {
+    public UserGameAnalytics addUsersExperience(int userId, int receivedExperience) {
         UserGameAnalytics userAnalytics = getById(userId);
+        int currentTotalExperience = userAnalytics.getExp() + receivedExperience;
+        int nextLevel = userAnalytics.getLevel() + 1;
+        int experienceForLevelUp = playerLevelProperties.getExperience().get(nextLevel);
 
-        int level = experienceToMaxLevelConfig.floorEntry(experience).getValue();
-        userAnalytics.setExp(userAnalytics.getExp() + experience);
-        userAnalytics.setLevel(level);
+        if (currentTotalExperience >= experienceForLevelUp) {
+            userAnalytics.setLevel(nextLevel);
+            userAnalytics.setExp(currentTotalExperience - experienceForLevelUp);
+        } else {
+            userAnalytics.setExp(currentTotalExperience);
+        }
+
         userGameAnalyticsRepository.update(userAnalytics);
 
         return userAnalytics;
