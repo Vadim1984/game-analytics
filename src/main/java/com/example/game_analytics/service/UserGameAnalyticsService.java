@@ -25,7 +25,7 @@ public class UserGameAnalyticsService {
         UserGameAnalytics userAnalytics = getById(userId);
         int currentTotalExperience = userAnalytics.getExp() + receivedExperience;
         int nextLevel = userAnalytics.getLevel() + 1;
-        int experienceForLevelUp = playerLevelProperties.getExperience().get(nextLevel);
+        int experienceForLevelUp = playerLevelProperties.getLevelToExperienceMap().get(nextLevel);
 
         if (currentTotalExperience >= experienceForLevelUp) {
             userAnalytics.setLevel(nextLevel);
