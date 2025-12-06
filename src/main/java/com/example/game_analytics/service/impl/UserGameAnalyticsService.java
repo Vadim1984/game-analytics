@@ -1,26 +1,28 @@
-package com.example.game_analytics.service;
+package com.example.game_analytics.service.impl;
 
 import com.example.game_analytics.config.PlayerLevelProperties;
 import com.example.game_analytics.model.UserGameAnalytics;
-import com.example.game_analytics.repository.UserGameAnalyticsRepository;
+import com.example.game_analytics.repository.IUserGameAnalyticsRepository;
+import com.example.game_analytics.service.IUserGameAnalyticsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class UserGameAnalyticsService {
+public class UserGameAnalyticsService implements IUserGameAnalyticsService {
 
-    private final UserGameAnalyticsRepository userGameAnalyticsRepository;
+    private final IUserGameAnalyticsRepository userGameAnalyticsRepository;
     private final PlayerLevelProperties playerLevelProperties;
 
     @Autowired
-    public UserGameAnalyticsService(UserGameAnalyticsRepository userGameAnalyticsRepository,
+    public UserGameAnalyticsService(IUserGameAnalyticsRepository userGameAnalyticsRepository,
                                     PlayerLevelProperties playerLevelProperties) {
         this.userGameAnalyticsRepository = userGameAnalyticsRepository;
         this.playerLevelProperties = playerLevelProperties;
     }
 
+    @Override
     public UserGameAnalytics addUsersExperience(int userId, int receivedExperience) {
         UserGameAnalytics userAnalytics = getById(userId);
         int currentTotalExperience = userAnalytics.getExp() + receivedExperience;
@@ -39,6 +41,7 @@ public class UserGameAnalyticsService {
         return userAnalytics;
     }
 
+    @Override
     public UserGameAnalytics getById(int userId) {
         return Optional.ofNullable(userGameAnalyticsRepository.getByUserId(userId))
                 .orElseGet(() -> create(userId));

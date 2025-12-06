@@ -2,7 +2,7 @@ package com.example.game_analytics.controller;
 
 import com.example.game_analytics.dto.AddExperienceForUserRequest;
 import com.example.game_analytics.dto.UserGameAnalyticsResponse;
-import com.example.game_analytics.facade.UserGameAnalyticsFacade;
+import com.example.game_analytics.facade.IUserGameAnalyticsFacade;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class UserController {
-    private final UserGameAnalyticsFacade userGameAnalyticsFacade;
+    private final IUserGameAnalyticsFacade userGameAnalyticsFacade;
 
     @Autowired
-    public UserController(UserGameAnalyticsFacade userGameAnalyticsFacade) {
+    public UserController(IUserGameAnalyticsFacade userGameAnalyticsFacade) {
         this.userGameAnalyticsFacade = userGameAnalyticsFacade;
     }
 
