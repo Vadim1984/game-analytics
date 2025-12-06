@@ -3,6 +3,7 @@ package com.example.game_analytics.controller;
 import com.example.game_analytics.dto.AddExperienceForUserRequest;
 import com.example.game_analytics.dto.UserGameAnalyticsResponse;
 import com.example.game_analytics.facade.UserGameAnalyticsFacade;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,12 +19,12 @@ public class UserController {
         this.userGameAnalyticsFacade = userGameAnalyticsFacade;
     }
 
-    @PostMapping("/user/add-experience")
-    public UserGameAnalyticsResponse getPlayerById(@RequestBody AddExperienceForUserRequest request) {
+    @PostMapping(path = "/user/add-experience", consumes = "application/json", produces = "application/json")
+    public UserGameAnalyticsResponse getPlayerById(@Valid @RequestBody AddExperienceForUserRequest request) {
         return userGameAnalyticsFacade.addUsersExperience(request);
     }
 
-    @PostMapping("/user/{id}")
+    @PostMapping(path = "/user/{id}", produces = "application/json")
     public UserGameAnalyticsResponse getPlayerById(@PathVariable("id") Integer id) {
         return userGameAnalyticsFacade.getById(id);
     }
