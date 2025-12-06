@@ -12,6 +12,10 @@ import java.util.concurrent.TimeUnit;
 public class UserGameAnalyticsRepository implements IUserGameAnalyticsRepository {
     private final Cache<Integer, UserGameAnalytics> userCache;
 
+    public UserGameAnalyticsRepository(Cache<Integer, UserGameAnalytics> userCache) {
+        this.userCache = userCache;
+    }
+
     public UserGameAnalyticsRepository() {
         this.userCache = Caffeine.newBuilder()
                 .expireAfterWrite(1, TimeUnit.MINUTES)

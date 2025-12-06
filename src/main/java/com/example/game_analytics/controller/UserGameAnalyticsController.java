@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class UserController {
+public class UserGameAnalyticsController {
     private final IUserGameAnalyticsFacade userGameAnalyticsFacade;
 
     @Autowired
-    public UserController(IUserGameAnalyticsFacade userGameAnalyticsFacade) {
+    public UserGameAnalyticsController(IUserGameAnalyticsFacade userGameAnalyticsFacade) {
         this.userGameAnalyticsFacade = userGameAnalyticsFacade;
     }
 
