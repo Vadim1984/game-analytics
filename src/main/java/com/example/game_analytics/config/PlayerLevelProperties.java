@@ -1,6 +1,5 @@
 package com.example.game_analytics.config;
 
-import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -17,7 +16,7 @@ public class PlayerLevelProperties implements InitializingBean {
 
     @Setter
     private Map<String, String> experience = new HashMap<>();
-    @Getter
+
     private final Map<Integer, Integer> levelToExperienceMap = new TreeMap<>();
 
     @Override
@@ -31,7 +30,7 @@ public class PlayerLevelProperties implements InitializingBean {
         for (Map.Entry<String, String> entry : experience.entrySet()) {
             Integer level = parseInt(entry.getKey());
             // level key must be valid integer
-            if(level == null) {
+            if (level == null) {
                 throw new IllegalArgumentException("Level key is empty. Please check configuration");
             }
             Integer exp = parseInt(entry.getValue());
@@ -88,5 +87,9 @@ public class PlayerLevelProperties implements InitializingBean {
             }
         }
         return null;
+    }
+
+    public Map<Integer, Integer> getLevelToExperienceMap() {
+        return new HashMap<>(levelToExperienceMap);
     }
 }
