@@ -42,7 +42,7 @@ public class UserGameAnalyticsService implements IUserGameAnalyticsService {
     }
 
     @Override
-    public UserGameAnalytics getById(int userId) {
+    public synchronized UserGameAnalytics getById(int userId) {
         return Optional.ofNullable(userGameAnalyticsRepository.getByUserId(userId))
                 .orElseGet(() -> create(userId));
     }
