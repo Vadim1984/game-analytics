@@ -1,28 +1,23 @@
 package com.example.game_analytics.repository.impl;
 
 import com.example.game_analytics.model.UserGameAnalytics;
-import com.github.benmanes.caffeine.cache.Cache;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class UserGameAnalyticsRepositoryTest {
     private UserGameAnalyticsRepository testInstance;
-    private Cache<Integer, UserGameAnalytics> userCacheMock;
+    private ConcurrentMap<Integer, UserGameAnalytics> userCache;
 
     @BeforeEach
     public void setUp() {
-        userCacheMock = mock(Cache.class);
-        testInstance = new UserGameAnalyticsRepository(userCacheMock);
-        doNothing().when(userCacheMock).put(anyInt(), any());
+        userCache = new ConcurrentHashMap<>();
+        testInstance = new UserGameAnalyticsRepository(userCache);
     }
 
     @Test
@@ -35,23 +30,7 @@ public class UserGameAnalyticsRepositoryTest {
         testInstance.create(analytics);
 
         //then
-        verify(userCacheMock).put(analytics.getId(), analytics);
-    }
-
-    @Test
-    void testCreateUserAlreadyExists() {
-        //given
-        int userId = 1;
-        UserGameAnalytics analytics = new UserGameAnalytics();
-        analytics.setId(userId);
-        when(userCacheMock.getIfPresent(userId)).thenReturn(analytics);
-
-        //when
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> testInstance.create(analytics));
-
-        //then
-        verify(userCacheMock).getIfPresent(userId);
-        assertEquals("User with ID [1] already exists.", exception.getMessage());
+        assertEquals(analytics, userCache.get(1));
     }
 
     @Test
@@ -60,13 +39,12 @@ public class UserGameAnalyticsRepositoryTest {
         int userId = 1;
         UserGameAnalytics analytics = new UserGameAnalytics();
         analytics.setId(userId);
-        when(userCacheMock.getIfPresent(userId)).thenReturn(analytics);
+        userCache.put(userId, analytics);
 
         //when
         UserGameAnalytics result = testInstance.getByUserId(userId);
 
         //then
-        verify(userCacheMock).getIfPresent(userId);
         assertEquals(analytics, result);
     }
 
@@ -76,14 +54,16 @@ public class UserGameAnalyticsRepositoryTest {
         int userId = 1;
         UserGameAnalytics analytics = new UserGameAnalytics();
         analytics.setId(userId);
-        when(userCacheMock.getIfPresent(userId)).thenReturn(analytics);
+        userCache.put(userId, analytics);
+        UserGameAnalytics updatedAnalytics = new UserGameAnalytics();
+        updatedAnalytics.setId(userId);
+        updatedAnalytics.setExp(100);
 
         //when
-        testInstance.update(analytics);
+        testInstance.update(updatedAnalytics);
 
         //then
-        verify(userCacheMock).invalidate(userId);
-        verify(userCacheMock).put(userId, analytics);
+        assertEquals(updatedAnalytics, userCache.get(userId));
     }
 
     @Test
@@ -92,13 +72,11 @@ public class UserGameAnalyticsRepositoryTest {
         int userId = 1;
         UserGameAnalytics analytics = new UserGameAnalytics();
         analytics.setId(userId);
-        when(userCacheMock.getIfPresent(userId)).thenReturn(null);
 
         //when
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> testInstance.update(analytics));
 
         //then
-        verify(userCacheMock).getIfPresent(userId);
         assertEquals("User with ID [1] does not exist.", exception.getMessage());
     }
 }

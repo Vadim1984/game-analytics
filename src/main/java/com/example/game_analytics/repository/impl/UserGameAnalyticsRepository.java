@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentMap;
 public class UserGameAnalyticsRepository implements IUserGameAnalyticsRepository {
     private final ConcurrentMap<Integer, UserGameAnalytics> userCache;
 
-    public UserGameAnalyticsRepository(ConcurrentHashMap<Integer, UserGameAnalytics> userCache) {
+    public UserGameAnalyticsRepository(ConcurrentMap<Integer, UserGameAnalytics> userCache) {
         this.userCache = userCache;
     }
 
@@ -21,9 +21,7 @@ public class UserGameAnalyticsRepository implements IUserGameAnalyticsRepository
 
     @Override
     public UserGameAnalytics create(UserGameAnalytics analytics) {
-        userCache.put(analytics.getId(), analytics);
-
-        return analytics;
+        return userCache.put(analytics.getId(), analytics);
     }
 
     @Override
@@ -32,16 +30,12 @@ public class UserGameAnalyticsRepository implements IUserGameAnalyticsRepository
     }
 
     @Override
-    public synchronized void update(UserGameAnalytics analytics) {
-        if (userCache.get(analytics.getId()) == null) {
-            throw new IllegalArgumentException("User with ID [%s] does not exist.".formatted(analytics.getId()));
-        }
-
-        userCache.remove(analytics.getId());
-        userCache.put(analytics.getId(), analytics);
-    }
-
-    private int generateId() {
-        return (int) (Math.random() * Integer.MAX_VALUE);
+    public void update(UserGameAnalytics analytics) {
+        userCache.compute(analytics.getId(), (key, existing) -> {
+            if (existing == null) {
+                throw new IllegalArgumentException("User with ID [%s] does not exist.".formatted(key));
+            }
+            return analytics;
+        });
     }
 }

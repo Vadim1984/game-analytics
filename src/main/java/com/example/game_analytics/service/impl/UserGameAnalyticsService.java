@@ -23,7 +23,7 @@ public class UserGameAnalyticsService implements IUserGameAnalyticsService {
     }
 
     @Override
-    public UserGameAnalytics addUsersExperience(int userId, int receivedExperience) {
+    public synchronized UserGameAnalytics addUsersExperience(int userId, int receivedExperience) {
         UserGameAnalytics userAnalytics = getById(userId);
         int currentTotalExperience = userAnalytics.getExp() + receivedExperience;
         int nextLevel = userAnalytics.getLevel() + 1;
